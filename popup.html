@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz</title>
+    <link rel="stylesheet" href="quizcss.css">
+</head>
+<body>
+  <div class="drawer" id="drawer">
+    <div class="drawer-content">
+      <a href="javascript:void(0)" class="close" onclick="closeDrawer()">&times;</a>
+      <a href="#">Home</a>
+      <a href="#">About Us</a>
+      <a href="#">Quizzes</a>
+    </div>
+  </div>
+
+  <div id="quizList" class="quiz-list">
+    <button class="open-drawer" onclick="openDrawer()">&#9776; Open Drawer</button>
+  </div>
+
+  <div id="scoreModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="scoreMessage"></p>
+    </div>
+  </div>
+
+  <script>
+    function openDrawer() {
+      document.getElementById("drawer").style.width = "250px";
+    }
+
+    function closeDrawer() {
+      document.getElementById("drawer").style.width = "0";
+    }
+
+    // JavaScript code (same as before)
+    fetch("https://raw.githubusercontent.com/su-resh/idpass/main/qnans.json")
+      .then(response => response.json())
+      .then(data => {
+        const quizList = document.getElementById("quizList");
+
+        data.quizzes.forEach((quiz, index) => {
+          const quizContainer = document.createElement("div");
+          quizContainer.classList.add("quiz-item");
+
+          const quizTitle = document.createElement("h3");
+          quizTitle.classList.add("quiz-title");
+          quizTitle.textContent = quiz.title;
+          quizContainer.appendChild(quizTitle);
+          
+          const questions = quiz.questions;
+          questions.forEach((question, qIndex) => {
+            const questionElement = document.createElement("div");
+            questionElement.classList.add("question");
+
+            const questionText = document.createElement("p");
+            questionText.textContent = `${qIndex + 1}. ${question.question}`;
+            questionElement.appendChild(questionText);
+
+            const optionsContainer = document.createElement("div");
+            optionsContainer.classList.add("options");
+
+            question.options.forEach((option, oIndex) => {
+              const optionElement = document.createElement("label");
+              optionElement.innerHTML = `
+                <input type="radio" name="quiz${index}-question${qIndex}" value="${oIndex}">
+                <span>${option}</span>
+              `;
+              optionsContainer.appendChild(optionElement);
+            });
+
+            questionElement.appendChild(optionsContainer);
+            quizContainer.appendChild(questionElement);
+          });
+
+          quizList.appendChild(quizContainer);
+        });
+
+        const submitButton = document.createElement("button");
+        submitButton.classList.add("submit-button");
+        submitButton.textContent = "Show Overall Results";
+        submitButton.onclick = calculateOverallScore;
+        quizList.appendChild(submitButton);
+      })
+      .catch(error => console.error("Error fetching quiz data:", error));
+
+    function calculateOverallScore() {
+      // Same as before
+    }
+  </script>
+</body>
+</html>
